@@ -43,8 +43,11 @@ matrix:
   - os: windows
     compiler: MinGW
     script:
+    - dir
     - cmake .
+    - dir
     - cmake --build .
+    - dir
     - cmake --build . --target package
     - dir
     #deploy:
