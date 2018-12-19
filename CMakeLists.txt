@@ -1,37 +1,42 @@
 cmake_minimum_required(VERSION 3.2)
 
-project(helloworld VERSION 0.0.$ENV{TRAVIS_BUILD_NUMBER})
+if ($ENV{TRAVIS_BUILD_NUMBER})
+    project(alpha_hello VERSION 0.0.$ENV{TRAVIS_BUILD_NUMBER})
+else ()
+    project(alpha_hello VERSION 0.0.777)
+endif ()
 
-find_package(Boost COMPONENTS unit_test_framework REQUIRED)
+if(UNIX AND NOT APPLE)
+    find_package(Doxygen)
+
+    set(DOXYGEN_HAVE_DOT YES)
+    set(DOXYGEN_EXTRACT_ALL YES)
+    set(DOXYGEN_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/doc")
+    set(DOXYGEN_PROJECT_LOGO "${CMAKE_SOURCE_DIR}/logo-alpha.png")
+
+    doxygen_add_docs(doc "${PROJECT_SOURCE_DIR}")
+endif()
 
 configure_file(version.h.in "${PROJECT_SOURCE_DIR}/version.h")
 
 add_executable(${PROJECT_NAME} "main.cpp")
-add_library(sayhello "sayhello.cpp" "sayhello.h")
+add_library(sayhello SHARED "sayhello.cpp" "sayhello.h")
 
-add_executable(test_main_cli "test_main.cpp")
-
-set_target_properties(${PROJECT_NAME} "sayhello" "test_main_cli" PROPERTIES
-  CXX_STANDARD 17
+set_target_properties(${PROJECT_NAME} "sayhello" PROPERTIES
+  CXX_STANDARD 14
   CXX_STANDARD_REQUIRED ON
   COMPILE_OPTIONS "-Wpedantic;-Wall;-Wextra"
 )
 
-set_target_properties(test_main_cli PROPERTIES
-  COMPILE_DEFINITIONS BOOST_TEST_DYN_LINK
-  INCLUDE_DIRECTORIES ${Boost_INCLUDE_DIR}
-)
-
 target_link_libraries(${PROJECT_NAME} sayhello)
 
-target_link_libraries(test_main_cli
-  ${Boost_LIBRARIES}
-  sayhello
-)
-
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION bin)
+install(TARGETS "sayhello" LIBRARY DESTINATION lib)
 
-set(CPACK_GENERATOR DEB)
+if(UNIX AND NOT APPLE)
+    set(CPACK_GENERATOR DEB)
+    message("Package for linux generated as DEB")
+endif()
 
 set(CPACK_PACKAGE_VERSION_MAJOR "${PROJECT_VERSION_MAJOR}")
 set(CPACK_PACKAGE_VERSION_MINOR "${PROJECT_VERSION_MINOR}")
@@ -40,7 +45,3 @@ set(CPACK_PACKAGE_VERSION_PATCH "${PROJECT_VERSION_PATCH}")
 set(CPACK_PACKAGE_CONTACT dinsul2.0@gmail.com)
 
 include (CPack)
-
-enable_testing()
-
-add_test(test_version_valid test_main_cli)
