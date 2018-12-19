@@ -30,8 +30,10 @@ set_target_properties(${PROJECT_NAME} "sayhello" PROPERTIES
 
 target_link_libraries(${PROJECT_NAME} sayhello)
 
-install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION bin)
-install(TARGETS "sayhello" LIBRARY DESTINATION lib)
+if(UNIX)
+    install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION bin)
+    install(TARGETS "sayhello" LIBRARY DESTINATION lib)
+endif()
 
 if(UNIX AND NOT APPLE)
     set(CPACK_GENERATOR DEB)
