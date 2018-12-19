@@ -22,7 +22,6 @@ matrix:
           compiler: msvc
 
 script:
-- conan install . --build missing
 - cmake .
 - cmake --build .
 - cmake --build . --target test
