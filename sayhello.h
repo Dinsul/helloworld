@@ -7,7 +7,7 @@
 /// \param endLine symbols of end of line. Default is "\n"
 /// \return length of main message.
 ///
-int initSayHello(const char *str, const char *endLine = "\n");
+int initSayHello(const char *str);
 
 ///
 /// \brief closeSayHello free memory.

@@ -20,24 +20,36 @@ endif()
 configure_file(version.h.in "${PROJECT_SOURCE_DIR}/version.h")
 
 add_executable(${PROJECT_NAME} "main.cpp")
+
+set (CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 add_library(sayhello SHARED "sayhello.cpp" "sayhello.h")
 
 set_target_properties(${PROJECT_NAME} "sayhello" PROPERTIES
   CXX_STANDARD 14
   CXX_STANDARD_REQUIRED ON
-  COMPILE_OPTIONS "-Wpedantic;-Wall;-Wextra"
 )
+
+if(UNIX)
+  set_target_properties(${PROJECT_NAME} "sayhello" PROPERTIES
+    COMPILE_OPTIONS "-Wpedantic;-Wall;-Wextra"
+  )
+endif()
 
 target_link_libraries(${PROJECT_NAME} sayhello)
 
-if(UNIX)
-    install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION bin)
-    install(TARGETS "sayhello" LIBRARY DESTINATION lib)
+if(WIN32)
+	install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION .)
+	install(TARGETS "sayhello" RUNTIME DESTINATION .)
+else()
+	install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION bin)
+	install(TARGETS "sayhello" LIBRARY DESTINATION lib)
 endif()
 
 if(UNIX AND NOT APPLE)
     set(CPACK_GENERATOR DEB)
     message("Package for linux generated as DEB")
+else()
+    set(CPACK_GENERATOR ZIP)
 endif()
 
 set(CPACK_PACKAGE_VERSION_MAJOR "${PROJECT_VERSION_MAJOR}")

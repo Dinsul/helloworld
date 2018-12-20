@@ -5,18 +5,14 @@
 #include "version.h"
 
 static char *_string;
-static char *_endLine;
 
-int initSayHello(const char *str, const char *endLine)
+int initSayHello(const char *str)
 {
     size_t lenStr = strlen(str);
-    size_t lenEnd = strlen(endLine);
 
-    _string  = new char[sizeof(lenStr)];
-    _endLine = new char[sizeof(lenEnd)];
+    _string  = new char[lenStr];
 
     strncpy(_string,  str,     lenStr);
-    strncpy(_endLine, endLine, lenEnd);
 
     return (int)lenStr;
 }
@@ -24,12 +20,11 @@ int initSayHello(const char *str, const char *endLine)
 void closeSayHello()
 {
     delete[] _string;
-    delete[] _endLine;
 }
 
 void sayHello()
 {
-    printf("%s%s", _string, _endLine);
+    printf("%s\n", _string);
 }
 
 int version()
