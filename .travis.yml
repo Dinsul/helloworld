@@ -1,57 +1,29 @@
-
-language: cpp
-
-matrix:
-  include:
-  - os: linux
-    dist: xenial
-    env:
-    - LD_LIBRARY_PATH=lib
-    compiler: clang
-    install:
-    - sudo apt update
-    - sudo apt install doxygen graphviz
-    script:
-    - cmake .
-    - cmake --build .
-    - cmake --build . --target package
-    - cmake --build . --target doc
-    deploy:
-    - provider: script
-      skip_cleanup: true
-      script:
-      - curl -T alpha_hello-0.0.$TRAVIS_BUILD_NUMBER-Linux.deb -udinsul:$BINTRAY_API_KEY "https://api.bintray.com/content/alpha/homeworks/package/$TRAVIS_BUILD_NUMBER/alpha_hello-0.0.$TRAVIS_BUILD_NUMBER-Linux.deb;deb_distribution=trusty;deb_component=main;deb_architecture=amd64;publish=1"
-    - provider: pages
-      skip-cleanup: true
-      github-token: $GITHUB_TOKEN
-      keep-history: true
-      local-dir: doc/html
-      on:
-        branch: master
-  - os: osx
-    compiler: clang
-    script:
-    - cmake .
-    - cmake --build .
-    - cmake --build . --target package
-    - ls -al
-    #deploy:
-    #- provider: script
-      #skip_cleanup: true
-      #script:
-      #- curl -T alpha_hello-0.0.$TRAVIS_BUILD_NUMBER-Linux.deb -udinsul:$BINTRAY_API_KEY "https://api.bintray.com/content/alpha/homeworks/package/$TRAVIS_BUILD_NUMBER/alpha_hello-0.0.$TRAVIS_BUILD_NUMBER-Linux.deb;deb_distribution=trusty;deb_component=main;deb_architecture=amd64;publish=1"
-  - os: windows
-    compiler: MinGW
-    script:
-    - dir
-    - cmake .
-    - dir
-    - cmake --build .
-    - dir
-    - cmake --build . --target package
-    - dir
-    #deploy:
-    #- provider: script
-      #skip_cleanup: true
-      #script:
-      #- curl -T alpha_hello.exe -udinsul:$BINTRAY_API_KEY https://api.bintray.com/content/alpha/pentapod/<YOUR_COOL_PACKAGE_NAME>/<VERSION_NAME>/<FILE_TARGET_PATH>
+os: windows
+language: 
+  - cpp
+  - python
+python:
+  - "2.6"
+  - "2.7"
+  - "3.2"
+  - "3.3"
+  - "3.4"
+compiler:
+  - MinGW
+  - Visual Studio
+script:
+  - dir
+  - pip install conan
+  - conan
+  - dir
+  - cmake .
+  - dir
+  - cmake --build .
+  - dir
+  - cmake --build . --target package
+  - dir
+  #deploy:
+  #- provider: script
+    #skip_cleanup: true
+    #script:
+    #- curl -T alpha_hello.exe -udinsul:$BINTRAY_API_KEY https://api.bintray.com/content/alpha/pentapod/<YOUR_COOL_PACKAGE_NAME>/<VERSION_NAME>/<FILE_TARGET_PATH>
